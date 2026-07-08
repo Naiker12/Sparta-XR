@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, Layers } from 'lucide-react'
 import { ProjectCard } from './project-card'
+import { useScrollReveal } from '@/lib/use-scroll-reveal'
 import { getAllProjects, getCategories } from '@/lib/projects'
-import type { Project } from '@/lib/projects'
 
 const projects = getAllProjects()
 const categories = getCategories()
@@ -38,7 +38,7 @@ export function ProjectGrid() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setActiveCategory(null)}
-            className={`px-3 py-1.5 rounded-[6px] text-[12px] font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-[6px] text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6363] ${
               activeCategory === null
                 ? 'bg-[#ff6363] text-white'
                 : 'bg-[#111214] text-[#9c9c9d] hover:text-white'
@@ -50,7 +50,7 @@ export function ProjectGrid() {
             <button
               key={cat}
               onClick={() => setActiveCategory(prev => prev === cat ? null : cat)}
-              className={`px-3 py-1.5 rounded-[6px] text-[12px] font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-[6px] text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6363] ${
                 activeCategory === cat
                   ? 'bg-[#ff6363] text-white'
                   : 'bg-[#111214] text-[#9c9c9d] hover:text-white'
@@ -64,15 +64,36 @@ export function ProjectGrid() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-24">
+          <Layers className="w-10 h-10 text-[#2f3031] mx-auto mb-4" />
           <p className="text-[#9c9c9d]">No se encontraron proyectos con esos criterios.</p>
+          <button
+            onClick={() => { setSearch(''); setActiveCategory(null) }}
+            className="mt-4 text-sm text-[#6a6b6c] hover:text-white transition-colors font-[family-name:var(--font-geistmono)]"
+          >
+            LIMPIAR FILTROS
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map(project => (
-            <ProjectCard key={project.slug} project={project} />
+          {filtered.map((project, i) => (
+            <ProjectGridCard key={project.slug} project={project} index={i} />
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function ProjectGridCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.1 })
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+      style={{ transitionDelay: `${index * 80}ms` }}
+    >
+      <ProjectCard project={project} />
     </div>
   )
 }

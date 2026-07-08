@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { ArrowLeft, Calendar, Box } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { QrPanel } from '@/components/proyectos/qr-panel'
 import { Navbar } from '@/components/landing/navbar'
@@ -26,9 +26,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params
   const project = getProjectBySlug(slug)
 
-  if (!project) {
-    notFound()
-  }
+  if (!project) notFound()
 
   const arUrl = getArUrl(slug)
 
@@ -45,7 +43,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <div className="container">
           <Link
             href="/proyectos"
-            className="inline-flex items-center gap-1.5 text-sm text-[#9c9c9d] hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-sm text-[#9c9c9d] hover:text-white transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6363] focus-visible:ring-offset-2 focus-visible:ring-offset-[#040506]"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver a proyectos
@@ -80,19 +78,19 @@ export default async function ProjectDetailPage({ params }: Props) {
                 </p>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <span className="text-[11px] text-[#6a6b6c] font-[family-name:var(--font-geistmono)] block mb-1">
+                    <span className="text-[11px] font-[family-name:var(--font-geistmono)] text-[#7CF2B0] block mb-1 tracking-[0.05em]">
                       FORMATO
                     </span>
                     <span className="text-sm text-white">{project.modelFormat}</span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-[#6a6b6c] font-[family-name:var(--font-geistmono)] block mb-1">
+                    <span className="text-[11px] font-[family-name:var(--font-geistmono)] text-[#7CF2B0] block mb-1 tracking-[0.05em]">
                       PESO
                     </span>
                     <span className="text-sm text-white">{project.modelSize}</span>
                   </div>
                   <div>
-                    <span className="text-[11px] text-[#6a6b6c] font-[family-name:var(--font-geistmono)] block mb-1">
+                    <span className="text-[11px] font-[family-name:var(--font-geistmono)] text-[#7CF2B0] block mb-1 tracking-[0.05em]">
                       COMPATIBILIDAD
                     </span>
                     <span className="text-sm text-white">{project.compatibility}</span>
@@ -100,9 +98,24 @@ export default async function ProjectDetailPage({ params }: Props) {
                 </div>
               </div>
 
+              {(project.images.length > 0) && (
+                <div>
+                  <h2 className="text-lg font-medium text-white mb-4">Galería</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {project.images.map((img, i) => (
+                      <div key={i} className="rounded-[12px] bg-gradient-to-br from-[#111214] via-[#141518] to-[#111214] aspect-[4/3] flex items-center justify-center key-card">
+                        <Box className="w-8 h-8 text-[#2f3031]" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 flex-wrap">
                 {project.tags.map(tag => (
-                  <span key={tag} className="text-[12px] text-[#6a6b6c] font-[family-name:var(--font-geistmono)]">#{tag}</span>
+                  <span key={tag} className="text-[12px] text-[#6a6b6c] font-[family-name:var(--font-geistmono)]">
+                    #{tag}
+                  </span>
                 ))}
               </div>
             </div>
