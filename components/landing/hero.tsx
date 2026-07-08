@@ -1,8 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import { ViewfinderFrame } from '@/components/ui/viewfinder-frame'
+import { usePrefersReducedMotion } from '@/lib/use-scroll-reveal'
+
+const telemetryLines = [
+  { text: 'TRACKING · STABLE', delay: '0s', top: '20%', right: '10%' },
+  { text: 'SURFACE_LOCK · 0.98', delay: '1.5s', top: '65%', left: '8%' },
+  { text: 'FOV · 62°', delay: '3s', bottom: '15%', right: '12%' },
+]
 
 export function Hero() {
+  const reduced = usePrefersReducedMotion()
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#040506]">
       <div className="absolute inset-0 pointer-events-none">
@@ -26,7 +36,49 @@ export function Hero() {
         />
       </div>
 
-      <div className="relative z-10 container text-center px-4">
+      <ViewfinderFrame
+        className="w-[min(90vw,720px)] h-[min(70vh,520px)] mx-auto"
+        color="#7CF2B0"
+        size={28}
+        thickness={2.5}
+      />
+
+      {!reduced && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+          <div
+            className="absolute left-[10%] right-[10%] h-[1.5px] animate-scan-line"
+            style={{
+              background: 'linear-gradient(90deg, transparent, rgba(124, 242, 176, 0.6), rgba(124, 242, 176, 0.9), rgba(124, 242, 176, 0.6), transparent)',
+              boxShadow: '0 0 8px rgba(124, 242, 176, 0.3), 0 0 20px rgba(124, 242, 176, 0.1)',
+              top: '30%',
+            }}
+          />
+        </div>
+      )}
+
+      {!reduced && telemetryLines.map(line => (
+        <div
+          key={line.text}
+          className="absolute pointer-events-none animate-telemetry"
+          style={{
+            top: line.top,
+            bottom: line.bottom as string | undefined,
+            left: line.left,
+            right: line.right,
+            animationDelay: line.delay,
+            animationDuration: '4s',
+          }}
+        >
+          <span className="text-[10px] font-[family-name:var(--font-geistmono)] text-[#7CF2B0] tracking-[0.05em] opacity-70 whitespace-nowrap">
+            {'>'} {line.text}
+          </span>
+        </div>
+      ))}
+
+      <div
+        className={`relative z-10 container text-center px-4 ${!reduced ? 'animate-fade-in-up' : ''}`}
+        style={!reduced ? { animationDelay: '0.25s', animationFillMode: 'both' } : undefined}
+      >
         <h1
           className="text-[56px] font-normal text-white leading-[1.17] tracking-[0.22px] max-w-[800px] mx-auto"
           style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}
@@ -41,13 +93,13 @@ export function Hero() {
         <div className="mt-8 flex items-center justify-center gap-3">
           <Link
             href="/proyectos"
-            className="inline-flex items-center gap-2 h-10 px-6 rounded-[8px] bg-[#e6e6e6] text-[#454647] text-[13px] font-medium hover:bg-[#d4d4d4] transition-colors"
+            className="inline-flex items-center gap-2 h-10 px-6 rounded-[8px] bg-[#e6e6e6] text-[#454647] text-[13px] font-medium hover:bg-[#d4d4d4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6363] focus-visible:ring-offset-2 focus-visible:ring-offset-[#040506]"
           >
             Ver proyectos
           </Link>
           <Link
             href="#como-funciona"
-            className="inline-flex items-center gap-2 h-10 px-6 rounded-[8px] border border-[#363739] text-[#9c9c9d] text-[13px] font-medium hover:text-white hover:bg-[#111214] transition-colors"
+            className="inline-flex items-center gap-2 h-10 px-6 rounded-[8px] border border-[#363739] text-[#9c9c9d] text-[13px] font-medium hover:text-white hover:bg-[#111214] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6363] focus-visible:ring-offset-2 focus-visible:ring-offset-[#040506]"
           >
             Cómo funciona
           </Link>

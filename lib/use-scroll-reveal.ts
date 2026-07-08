@@ -1,0 +1,59 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+
+interface Options {
+  threshold?: number
+  rootMargin?: string
+  once?: boolean
+}
+
+export function useScrollReveal<T extends HTMLElement = HTMLDivElement>({
+  threshold = 0.1,
+  rootMargin = '0px 0px -40px 0px',
+  once = true,
+}: Options = {}) {
+  const ref = useRef<T>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setIsVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          if (once) observer.unobserve(el)
+        } else if (!once) {
+          setIsVisible(false)
+        }
+      },
+      { threshold, rootMargin },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold, rootMargin, once])
+
+  return { ref, isVisible }
+}
+
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReduced(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  return reduced
+}

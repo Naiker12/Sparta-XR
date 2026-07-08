@@ -22,6 +22,7 @@
   --color-deep-space: #02193b;
   --color-info-blue: #56c2ff;
   --color-success-green: #59d499;
+  --color-tracking: #7CF2B0;
 
   --color-background: var(--color-void-black);
   --color-foreground: var(--color-pure-white);
@@ -129,4 +130,51 @@
   backdrop-filter: blur(48px);
   -webkit-backdrop-filter: blur(48px);
   border: 1px solid #363739;
+}
+
+@keyframes scan-line {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(100%); opacity: 0.8; }
+}
+
+@keyframes telemetry-fade {
+  0%, 100% { opacity: 0; transform: translateY(4px); }
+  15%, 85% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes qr-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-scan-line {
+  animation: scan-line 4s ease-in-out infinite;
+}
+
+@utility animate-telemetry {
+  animation: telemetry-fade 3s ease-in-out infinite;
+}
+
+@utility animate-qr-scan {
+  animation: qr-scan 1.2s ease-in-out forwards;
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scan-line,
+  .animate-telemetry,
+  .animate-qr-scan,
+  .animate-fade-in-up {
+    animation: none !important;
+  }
 }

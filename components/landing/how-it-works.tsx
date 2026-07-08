@@ -1,6 +1,7 @@
 'use client'
 
 import { Search, QrCode, Eye, Hand } from 'lucide-react'
+import { useScrollReveal } from '@/lib/use-scroll-reveal'
 
 const steps = [
   {
@@ -26,10 +27,15 @@ const steps = [
 ]
 
 export function HowItWorks() {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.08 })
+
   return (
     <section className="py-24 bg-[#040506]" id="como-funciona">
       <div className="container">
-        <div className="text-center mb-16">
+        <div
+          ref={ref}
+          className={`text-center mb-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+        >
           <h2 className="text-[32px] font-normal text-white leading-[1.15]">
             Cómo funciona
           </h2>
@@ -37,26 +43,68 @@ export function HowItWorks() {
             Cuatro pasos simples para llevar cualquier proyecto a la realidad aumentada.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div
+            className="hidden md:block absolute top-12 left-[12.5%] right-[12.5%] h-px"
+            style={{
+              background: `repeating-linear-gradient(90deg, #363739 0px, #363739 8px, transparent 8px, transparent 16px)`,
+            }}
+          />
+
           {steps.map((step, i) => {
             const Icon = step.icon
             return (
-              <div key={step.title} className="text-center">
-                <div className="relative inline-flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 rounded-full bg-[#111214] flex items-center justify-center key-card">
-                    <Icon className="w-7 h-7 text-[#e6e6e6]" />
-                  </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#ff6363] text-white text-[11px] font-medium flex items-center justify-center font-[family-name:var(--font-geistmono)]">
-                    {i + 1}
-                  </span>
-                </div>
-                <h3 className="text-lg font-medium text-white mb-2">{step.title}</h3>
-                <p className="text-sm text-[#9c9c9d] max-w-[240px] mx-auto">{step.description}</p>
-              </div>
+              <StepCard
+                key={step.title}
+                icon={<Icon className="w-6 h-6 text-[#e6e6e6]" />}
+                number={i + 1}
+                title={step.title}
+                description={step.description}
+                delay={i * 120}
+              />
             )
           })}
         </div>
       </div>
     </section>
+  )
+}
+
+function StepCard({
+  icon,
+  number,
+  title,
+  description,
+  delay,
+}: {
+  icon: React.ReactNode
+  number: number
+  title: string
+  description: string
+  delay: number
+}) {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.15 })
+
+  return (
+    <div
+      ref={ref}
+      className={`text-center transition-all duration-600 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      style={{ transitionDelay: `${delay}ms`, transitionDuration: '600ms' }}
+    >
+      <div className="relative inline-flex items-center justify-center mb-5">
+        <div className="w-14 h-14 rounded-full bg-[#111214] flex items-center justify-center key-card">
+          {icon}
+        </div>
+        <span
+          className="absolute -top-1.5 -right-1.5 w-5.5 h-5.5 rounded-md bg-[#111214] border border-[#363739] flex items-center justify-center"
+          style={{ fontFamily: "'GeistMono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}
+        >
+          <span className="text-[10px] text-[#7CF2B0] font-medium">{String(number).padStart(2, '0')}</span>
+        </span>
+      </div>
+      <h3 className="text-base font-medium text-white mb-2">{title}</h3>
+      <p className="text-sm text-[#9c9c9d] max-w-[220px] mx-auto leading-relaxed">{description}</p>
+    </div>
   )
 }
